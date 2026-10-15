@@ -1,8 +1,8 @@
 # GPX Route Repair
 
-An English-language agent skill for repairing cycling routes and estimating ascent after correcting terrain elevation artifacts above tunnels.
+Repair cycling routes that cut across hills, miss bends, or follow the wrong road. Get a GPX for import into Strava or GPX Studio, and estimate ascent after removing false elevation spikes above tunnels.
 
-Use OpenStreetMap, public Strava segments or rides, and imagery to investigate unsupported shortcuts, missed bends, and incorrect turnarounds. Deliver a planning GPX for import into Strava or GPX Studio, with the evidence and remaining uncertainty explained.
+Repairs use OpenStreetMap, public Strava segments or rides, and imagery to preserve the intended route. Sections that cannot be confirmed are flagged for review.
 
 ## Install
 
@@ -12,23 +12,23 @@ With the [skills CLI](https://skills.sh/):
 npx skills add equationzhao/gpx-route-repair
 ```
 
-Select your agent when prompted. For manual installation in Codex, copy the `skills/gpx-route-repair` directory into `~/.codex/skills/`, then start a new session. Other agents that support `SKILL.md` may use a different installation location.
+Select your agent when prompted. To install manually in Codex, copy `skills/gpx-route-repair` into `~/.codex/skills/` and start a new session.
 
 ## Use
 
-Example requests:
+Provide a GPX file or an accessible Strava route:
 
-> Use $gpx-route-repair to inspect this GPX for sections that do not follow roads. Use OSM, public rides or segments, and imagery as evidence. Give me a repaired GPX and identify any unresolved sections.
+> Use $gpx-route-repair to fix the sections that do not follow roads. Give me a repaired GPX and flag any unresolved sections.
 
-> Use $gpx-route-repair to estimate this route's ascent after correcting terrain elevations above tunnels. Retain the tunnels' actual uphill gain and explain the uncertainty.
+> Use $gpx-route-repair to repair this route and calculate its ascent after correcting tunnel elevations.
 
-> Repair this route and deliver a GPX I can import into Strava or GPX Studio. Recalculate tunnel-corrected ascent from the final route.
+Tunnel correction retains the tunnel's actual uphill gain. When only portal heights are available, the gradient between them is estimated; results can differ from Strava's ascent calculation.
 
-The agent needs file access and access to suitable map/reference sources to perform route repair. It chooses tools available in its environment; no specific MCP server or paid API is required by the skill. Some reference sources may require authentication or may be unavailable. The skill directs the agent to retain and flag unresolved sections when evidence is insufficient.
+The agent needs access to the route file and map sources. If repaired roads are missing from an editor's map, use manual drawing mode to avoid losing the repairs during automatic rerouting.
 
-## Ascent helper
+## Calculate ascent directly
 
-The bundled helper uses Python 3.8+ and the standard library only. From the repository root:
+The included helper requires Python 3.8+ with no additional packages. From the repository root:
 
 ```bash
 # Baseline ascent from a track with elevations
@@ -39,39 +39,9 @@ python3 skills/gpx-route-repair/scripts/gpx_ascent.py examples/synthetic-route.g
   --tunnels examples/synthetic-tunnels.json --threshold-m 3
 ```
 
-The example is entirely synthetic: it is not a real ride, road, or tunnel. It demonstrates a surface elevation spike replaced with a rising tunnel profile. Rounded results are:
+The synthetic example reduces ascent from 85 m to 20 m while retaining a 5 m rise inside the tunnel.
 
-| Metric | Baseline | Tunnel-corrected |
-| --- | ---: | ---: |
-| Sum of positive elevation differences | 85 m | 20 m |
-| Ascent with a 3 m reversal threshold | 85 m | 20 m |
-
-The modeled tunnel still rises by 5 m. Correcting its terrain artifact removes 65 m from the example's total ascent.
-
-The helper reads GPX track segments and reviewed tunnel JSON, then prints an audit as JSON. It makes no network requests and does not modify or export a GPX. It cannot discover tunnels, establish road access, or independently verify supplied evidence. Missing elevations are rejected. See [the tunnel reference](skills/gpx-route-repair/references/tunnel-elevation.md) for the input schema and calculation method.
-
-## Scope and limitations
-
-- Route geometry repair is an agent-guided workflow, not an automatic map-matching program bundled with this repository.
-- Tunnel correction removes false surface hills while retaining modeled tunnel ascent. Linear portal interpolation is an estimate, not a surveyed tunnel profile.
-- The helper's filtering method is documented and does not reproduce Strava's proprietary ascent calculation.
-- GPX format checks do not establish that a platform import succeeded. Automatic rerouting can also change repaired geometry when roads are absent from its map.
-- The workflow produces route-planning files; activity synchronization and uploading fabricated rides are outside its scope.
-
-This repository includes no personal ride files, credentials, or copied Strava activities. When using OSM or other third-party data, follow the source's attribution and usage requirements; this repository's license covers its own code and instructions.
-
-## Repository layout
-
-```text
-skills/gpx-route-repair/
-  SKILL.md                        Agent instructions
-  agents/openai.yaml              Codex UI metadata
-  references/tunnel-elevation.md  Portal review and calculation guidance
-  scripts/gpx_ascent.py           Offline ascent helper
-examples/
-  synthetic-route.gpx             Artificial elevation profile
-  synthetic-tunnels.json          Artificial portal data
-```
+For your own route, supply a GPX with elevations and reviewed tunnel intervals and portal heights. The helper prints a JSON report; it does not discover tunnels or modify the GPX. See [tunnel inputs and calculation details](skills/gpx-route-repair/references/tunnel-elevation.md).
 
 ## License
 
