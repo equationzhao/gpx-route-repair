@@ -1,0 +1,11 @@
+[
+  {
+    "segment": 0,
+    "start_m": 111.19492664455875,
+    "end_m": 333.58477993367626,
+    "entry_elevation_m": 110,
+    "exit_elevation_m": 115,
+    "source": "Synthetic example only: artificial tunnel between the second and fourth track points",
+    "elevation_source": "Synthetic portal heights of 110 m and 115 m; not surveyed or observed"
+  }
+]

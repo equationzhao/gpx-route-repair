@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="gpx-route-repair">
+  <metadata>
+    <name>Synthetic tunnel elevation example</name>
+    <desc>Artificial coordinates and elevations; not a real route or ride.</desc>
+  </metadata>
+  <trk>
+    <name>Synthetic surface elevation spike</name>
+    <trkseg>
+      <trkpt lat="0" lon="0"><ele>100</ele></trkpt>
+      <trkpt lat="0" lon="0.001"><ele>110</ele></trkpt>
+      <trkpt lat="0" lon="0.002"><ele>180</ele></trkpt>
+      <trkpt lat="0" lon="0.003"><ele>115</ele></trkpt>
+      <trkpt lat="0" lon="0.004"><ele>120</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
